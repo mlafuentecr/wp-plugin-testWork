@@ -18,7 +18,7 @@
                 $post_id = get_the_ID(); // Get the current post ID
                 $slug = get_post_field('post_name', $post_id);
         ?>
-       xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+       
                 <article class='mx-3'>
                     <h2 class='mx-3 my-4'><?php the_title(); ?></h2>
                      <div class="d-flex mx-3">

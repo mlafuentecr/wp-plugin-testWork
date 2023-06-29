@@ -1,8 +1,8 @@
 <?php
 //plugin_dir_path( __FILE__ ) .'/includes/
 //MY_PLUGIN_PATH . '/includes/
-define( 'MY_PLUGIN_PATH', plugins_url().'/Competitions_client');
-define( 'pg_template',      '/page-template_competitions_list.php' );
+define( 'MY_PLUGIN_PATH',  dirname( __FILE__ ) );
+define( 'pg_template',      'page-template_competitions_list.php' );
 define( 'pg_title',         'competitions list' );
 define( 'pg_id',           getId() );
 
@@ -45,8 +45,7 @@ function register_basic_page_template( $page_templates ) {
   /* redirect_page_template parent theme page templates */
   function redirect_page_template ($template) {
         if (checkTitle()) {
-            $template =  MY_PLUGIN_PATH . '/templates' . pg_template;
-            //wp_die($template);
+         $template =  MY_PLUGIN_PATH . '/'.'templates/' . pg_template;
             return $template;
         }
     }
