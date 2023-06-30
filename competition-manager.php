@@ -45,4 +45,6 @@ require plugin_dir_path( __FILE__ ) . 'includes/post_type_entries.php';
 require plugin_dir_path( __FILE__ ) . 'includes/post_type_competition.php';
 require plugin_dir_path( __FILE__ ) . 'includes/make-template_competitions_list.php';
 require plugin_dir_path( __FILE__ ) . 'includes/dynimic-submit-entry.php';
+require plugin_dir_path( __FILE__ ) . 'includes/add_ajax.php';
+
 

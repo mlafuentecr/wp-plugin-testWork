@@ -40,7 +40,7 @@ function entries_post_type() {
   
 
 
-  // Register meta box
+  // Register meta box firstname and then callback will call the rest
   function add_first_name_meta_box() {
     add_meta_box(
         'first_name',       // Unique ID
@@ -71,6 +71,8 @@ function render_meta($arg) {
     $description    = get_post_meta($post->ID, 'description', true);
     $competition_id = get_post_meta($post->ID, 'competition_id', true);
     ?>
+
+    
 <label for="first_name"><?php echo esc_html('first_name','text-domain'); ?></label></br>
 <input type="text" name="first_name" id="first_name" value="<?php echo esc_attr($first_name); ?>" /> </br></br>
 

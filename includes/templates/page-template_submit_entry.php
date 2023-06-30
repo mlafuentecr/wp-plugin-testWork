@@ -3,69 +3,18 @@
     Template Name: page-template_submit_entry
     */
 
-   
 
     get_header(  );
 
 
+ 
+    add_action("wp_ajax_ibvote", "ibvote");
+    add_action("wp_ajax_nopriv_ibvote", "ibvote");
     
-
-
-// Process the form data
-function process_form_data() {
-    $first_name = sanitize_text_field($_POST['first_name']);
-    $last_name = sanitize_text_field($_POST['last_name']);
-    $email = sanitize_email($_POST['email']);
-    $phone = sanitize_text_field($_POST['phone']);
-
-    // Generate a random ID
-    $random_id = uniqid();
-
-    // Perform additional operations with the form data (e.g., save to database)
-
-    // Return a response
-    $response = array(
-        'status' => 'success',
-        'message' => 'Form submitted successfully',
-        'random_id' => $random_id,
-    );
-    wp_send_json($response);
-}
-add_action('wp_ajax_process_form', 'process_form_data');
-add_action('wp_ajax_nopriv_process_form', 'process_form_data');
-
-function get_data() {
-    echo  "test";
-    wp_die();  //die();
-}
-
-add_action( 'wp_ajax_nopriv_get_data', 'get_data' );
-add_action( 'wp_ajax_get_data', 'get_data' );
-
-
-function check_post_type_by_title($post_title, $post_type) {
-    $args = array(
-        'post_status' => 'publish',
-        'post_type' => 'page',
-        'posts_per_page' => 1,
-        'title' => $post_title,
-    );
-
-    $query = new WP_Query($args);
-
-    if ($query->have_posts()) {
-        // Post with the specific title exists
-        wp_die('true');
-        return true;
-    } else {
-        wp_die('false');
-        return false;
+    function ibvote(){
+        echo "DONE";
+        wp_die();
     }
-}
-
-
-
-
 
 
 // Update post type fields
@@ -110,7 +59,7 @@ function new_post_type($post_id, $first_name, $last_name, $email, $phone, $descr
 
         ?>
 
-       <form id="my-form" class='m-auto col-6'>
+       <form id="myForm" class='m-auto col-6'>
 
             <div class='row my-3'>
                 <label for="first-name" class='col-4'>First Name:</label>
@@ -134,100 +83,60 @@ function new_post_type($post_id, $first_name, $last_name, $email, $phone, $descr
             </div>
 
     </form>
-        
+    <div id="responseMessage"></div>    
 
 <script>
 
 
+var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
+console.log(ajaxurl);
+console.log(PHPVARS.ajaxurl, ' PHPVARS.ajaxurl');
 
 document.addEventListener('DOMContentLoaded', function() {
-  var myForm = document.getElementById('my-form');
-  console.log('url ',ajax_object.ajax_url);  // Outputs the AJAX URL
-  // Form submission using AJAX
-  myForm.addEventListener('submit', function(event) {
-    event.preventDefault();
+    const form = document.getElementById('myForm');
+    const responseMessage = document.getElementById('responseMessage');
 
-    // Collect form data
-    var formData = new FormData(myForm);
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        console.log(responseMessage, 'responseMessage')
+        const first_name = form.querySelector('input[name="first_name"]').value;
+        const last_name = form.querySelector('input[name="last_name"]').value;
+        const email = form.querySelector('input[name="email"]').value;
+        const Phone = form.querySelector('input[name="Phone"]').value;
+        
+        const formData = new FormData(form);
+        formData.append('action', 'ibvote');
+        formData.append('first_name', first_name);
+        formData.append('last_name', last_name);
+        formData.append('email', email);
+        formData.append('Phone', Phone);
+        console.log(formData, ' formData')
 
-   // Create payload object
-  var payload = {
-    first_name: first_name,
-    last_name: last_name,
-    action: 'process_form'
-  };
-
-
-    console.log('xxxxxxxxx',formData)
-    // Construct the request payload
-    formData.append('action', 'process_form');
-
-
-
-
-        // Send the AJAX request
-        //  fetch(ajax_object.ajax_url, {
-        // fetch('<?php //echo esc_url(admin_url('admin-ajax.php')); ?>', {
-
-  // Send the AJAX request
-  fetch(ajax_object.ajax_url, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-    .then(function(response) {
-      return response.json();
-    })
-    .then(function(response) {
-      if (response.status === 'success') {
-        // Display success message
-        console.log('Form submitted successfully');
-      } else {
-        // Display error message
-        console.log('Error submitting form');
-      }
-    })
-    .catch(function(error) {
-      console.log(error);
+        fetch(ajaxurl, {
+            method: 'POST',
+            body: formData,
+            data: {
+        'action' : 'ibvote'
+    },
+        })
+        .then(function(response) {
+            if (response.ok) {
+              console.log(response, '1xxxx');
+              responseMessage.innerHTML = 'Title already exists. Please choose a different title.';
+              form.reset();
+                return response.text();
+            } else {
+              console.log(response, 'Exxxx');
+              responseMessage.innerHTML = 'Error already exists.';
+                throw new Error('Error: ' + response.status);
+            }
+        })
+        .catch(function(error) {
+          console.log(error.message, 'Exxxx');
+            responseMessage.innerHTML = error.message;
+        });
     });
-
-  });
-
-  // Update post type fields using AJAX
-function updatePostTypeFields(postID, formData) {
-    fetch('<?php echo esc_url(admin_url('admin-ajax.php')); ?>', {
-    method: 'POST',
-    body: JSON.stringify({
-      action: 'update_post_type_fields',
-      post_id: postID,
-      form_data: formData
-    }),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-    .then(function(response) {
-        console.log( response.json() );
-      return response.json();
-    })
-    .then(function(response) {
-      if (response.status === 'success') {
-        console.log('Post type fields updated successfully');
-      } else {
-        console.log('Error updating post type fields');
-      }
-    })
-    .catch(function(error) {
-      console.log(error);
-    });
-}
-
-
 });
-
-
 </script>
 
 
