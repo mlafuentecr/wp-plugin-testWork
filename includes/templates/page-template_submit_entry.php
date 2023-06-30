@@ -114,10 +114,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         fetch(ajaxurl, {
             method: 'POST',
-            body: formData,
-            data: {
-        'action' : 'ibvote'
-    },
+            body: formData.serialize(),
+  
         })
         .then(function(response) {
             if (response.ok) {
